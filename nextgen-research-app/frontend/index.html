@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Next-Gen Deep Research</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        margin: 0;
+        background: #0f172a;
+        color: #e5e7eb;
+      }
+      .app {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+      }
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.25rem;
+      }
+      .subtitle {
+        color: #9ca3af;
+        margin-bottom: 1.5rem;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        gap: 20px;
+      }
+      .card {
+        background: #020617;
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+        padding: 16px 18px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      }
+      label {
+        font-size: 0.85rem;
+        color: #9ca3af;
+        display: block;
+        margin-bottom: 4px;
+      }
+      textarea, select, input[type="text"] {
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #374151;
+        background: #020617;
+        color: #e5e7eb;
+        padding: 8px 10px;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+      }
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+      select {
+        height: 34px;
+      }
+      button {
+        border-radius: 999px;
+        border: none;
+        padding: 8px 18px;
+        background: #4f46e5;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .controls-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        align-items: flex-end;
+      }
+      .field {
+        flex: 1 1 180px;
+      }
+      .status {
+        font-size: 0.85rem;
+        color: #9ca3af;
+        margin-top: 8px;
+      }
+      .phase-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 10px;
+        border-radius: 999px;
+        background: #111827;
+        border: 1px solid #374151;
+        font-size: 0.75rem;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+      }
+      .guide-step {
+        margin-bottom: 10px;
+      }
+      .guide-step strong {
+        color: #e5e7eb;
+      }
+      .guide-step span {
+        display: block;
+        color: #9ca3af;
+        font-size: 0.85rem;
+        margin-top: 2px;
+      }
+      .history-title {
+        margin-top: 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .history-list {
+        margin-top: 6px;
+        max-height: 180px;
+        overflow-y: auto;
+        padding: 0;
+        list-style: none;
+        border-top: 1px solid #111827;
+      }
+      .history-item {
+        padding: 6px 0;
+        border-bottom: 1px solid #111827;
+        cursor: pointer;
+      }
+      .history-item-title {
+        font-size: 0.85rem;
+        color: #e5e7eb;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .history-item-meta {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-top: 1px;
+      }
+      .report-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .report-box {
+        margin-top: 12px;
+        padding: 10px 12px;
+        background: #020617;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+        max-height: 420px;
+        overflow: auto;
+        white-space: pre-wrap;
+        font-size: 0.9rem;
+      }
+      .error {
+        color: #fca5a5;
+        margin-top: 6px;
+        font-size: 0.85rem;
+      }
+      @media (max-width: 800px) {
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>Next-Gen Deep Research</h1>
+      <div class="subtitle">Ask any question. The assistant will clarify, research in depth, and write a clear report for you.</div>
+
+      <div class="layout">
+        <div class="card">
+          <label for="question">What do you want to research?</label>
+          <textarea id="question" placeholder="Example: Compare the long-term prospects of solar vs nuclear energy for a developing country."></textarea>
+
+          <div class="controls-row">
+            <div class="field">
+              <label for="mode">Research mode</label>
+              <select id="mode">
+                <option value="deep_web">Deep web research (recommended)</option>
+                <option value="quick">Quick answer</option>
+                <option value="deep_web_and_local">Deep web + local documents (advanced)</option>
+                <option value="llm_only">LLM only (just answer, choose model)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="template">Helpful preset (optional)</label>
+              <select id="template">
+                <option value="">None</option>
+                <option value="academic">Academic literature review</option>
+                <option value="market">Market and competition study</option>
+                <option value="learn">Learn a new topic from scratch</option>
+                <option value="trading">Trading &amp; technical analysis</option>
+                <option value="simple">Explain in simple language</option>
+                <option value="plan">Step-by-step action plan</option>
+                <option value="compare">Compare options (pros &amp; cons)</option>
+                <option value="coding">Coding &amp; bug analysis</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="provider">Model provider (LLM only)</label>
+              <select id="provider">
+                <option value="">Default (Gemini)</option>
+                <option value="google_genai">Google Gemini</option>
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+              </select>
+            </div>
+            <div>
+              <button id="run-btn">Start research</button>
+            </div>
+          </div>
+
+          <div class="status" id="status">Idle. Describe what you want to learn and click "Start research".</div>
+          <div id="phase-pill" class="phase-pill" style="display:none"><div class="dot"></div><span id="phase-text">Scoping</span></div>
+          <div class="error" id="error" style="display:none"></div>
+
+          <div class="report-actions" id="report-actions" style="display:none">
+            <button id="copy-btn">Copy report</button>
+            <button id="download-btn">Download as .txt</button>
+          </div>
+          <div class="report-box" id="report" style="display:none"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0;margin-bottom:6px;font-size:1rem;">What is happening under the hood?</h3>
+          <div class="guide-step">
+            <strong>1. Scoping your question</strong>
+            <span>The assistant first makes sure it really understands what you want. For very broad or vague questions, it may internally refine or expand the brief.</span>
+          </div>
+          <div class="guide-step">
+            <strong>2. Researching with tools</strong>
+            <span>It searches the web (and optionally your documents) in several rounds, writing down notes and checking whether it has enough evidence.</span>
+          </div>
+          <div class="guide-step">
+            <strong>3. Supervising and combining findings</strong>
+            <span>For complex topics, a supervisor agent coordinates multiple sub-researchers, each focused on a sub-topic, and then merges their notes.</span>
+          </div>
+          <div class="guide-step">
+            <strong>4. Writing a clear report</strong>
+            <span>Finally, a writer model turns the brief and notes into a human-readable report you can copy or download.</span>
+          </div>
+          <div style="margin-top:10px;font-size:0.85rem;color:#9ca3af;">
+            Tip: start with one concrete question. If the answer is useful, you can ask follow-up questions or try a different preset mode.
+          </div>
+
+          <div class="history-title">Recent research</div>
+          <ul id="history" class="history-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const runBtn = document.getElementById('run-btn');
+      const questionEl = document.getElementById('question');
+      const modeEl = document.getElementById('mode');
+      const templateEl = document.getElementById('template');
+      const providerEl = document.getElementById('provider');
+      const statusEl = document.getElementById('status');
+      const phasePill = document.getElementById('phase-pill');
+      const phaseText = document.getElementById('phase-text');
+      const errorEl = document.getElementById('error');
+      const reportEl = document.getElementById('report');
+      const reportActions = document.getElementById('report-actions');
+      const copyBtn = document.getElementById('copy-btn');
+      const downloadBtn = document.getElementById('download-btn');
+      const historyEl = document.getElementById('history');
+
+      const HISTORY_KEY = 'nextgen_research_history_v1';
+      const MAX_HISTORY = 10;
+
+      function loadHistory() {
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveHistory(items) {
+        try {
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, MAX_HISTORY)));
+        } catch (_) {}
+      }
+
+      function renderHistory() {
+        const items = loadHistory();
+        historyEl.innerHTML = '';
+        if (!items.length) {
+          const li = document.createElement('li');
+          li.className = 'history-item-meta';
+          li.textContent = 'No runs yet. Your last questions will appear here.';
+          historyEl.appendChild(li);
+          return;
+        }
+        for (const item of items) {
+          const li = document.createElement('li');
+          li.className = 'history-item';
+          li.addEventListener('click', () => {
+            questionEl.value = item.question;
+            reportEl.textContent = item.final_report;
+            reportEl.style.display = 'block';
+            reportActions.style.display = 'flex';
+            statusEl.textContent = 'Loaded a previous report. You can edit the question and run again.';
+          });
+
+          const title = document.createElement('div');
+          title.className = 'history-item-title';
+          title.textContent = item.question || 'Untitled question';
+
+          const meta = document.createElement('div');
+          meta.className = 'history-item-meta';
+          meta.textContent = item.mode + ' · ' + item.time;
+
+          li.appendChild(title);
+          li.appendChild(meta);
+          historyEl.appendChild(li);
+        }
+      }
+
+      function addToHistory(entry) {
+        const items = loadHistory();
+        items.unshift(entry);
+        saveHistory(items);
+        renderHistory();
+      }
+
+      function formatTime() {
+        const d = new Date();
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function applyTemplate(question, template) {
+        if (!template) return question;
+        const trimmed = question.trim();
+        if (template === 'academic') {
+          return 'You are an academic research assistant. Write a literature-style review. Question: ' + (trimmed || 'Summarize recent academic work on this topic.');
+        }
+        if (template === 'market') {
+          return 'You are a market analyst. Focus on competitors, trends, and risks. Question: ' + (trimmed || 'Analyze the market and competition for this idea.');
+        }
+        if (template === 'learn') {
+          return 'Explain this topic step by step like I am new to it. Question: ' + (trimmed || 'Teach me the basics of this topic from scratch.');
+        }
+        if (template === 'trading') {
+          return 'You are a trading and technical analysis assistant. Explain price action, candlestick patterns, support/resistance levels, and risk management clearly. Question: ' + (trimmed || 'Analyze this market and explain the key candlestick signals, trend structure, and risk management ideas.');
+        }
+        if (template === 'simple') {
+          return 'Explain this in very simple, beginner-friendly language with short sentences and concrete examples. Avoid jargon. Question: ' + (trimmed || 'Teach me this topic as if I am completely new to it.');
+        }
+        if (template === 'plan') {
+          return 'Create a practical, numbered step-by-step action plan with clear tasks, priorities, and timelines. Question: ' + (trimmed || 'Give me a concrete plan I can follow for this goal.');
+        }
+        if (template === 'compare') {
+          return 'Focus on comparing the main options. List pros, cons, and when each option is a good or bad choice. Be neutral and balanced. Question: ' + (trimmed || 'Compare these options and help me understand tradeoffs.');
+        }
+        if (template === 'coding') {
+          return 'Act as a coding and debugging assistant. Explain code clearly, point out potential bugs, suggest improvements, and add helpful comments. Question or code: ' + (trimmed || 'Review this code and explain what it does, possible bugs, and how to improve it.');
+        }
+        return question;
+      }
+
+      function setPhase(mode) {
+        if (!mode) {
+          phasePill.style.display = 'none';
+          return;
+        }
+        phasePill.style.display = 'inline-flex';
+        if (mode === 'scoping') phaseText.textContent = 'Scoping your question';
+        else if (mode === 'research') phaseText.textContent = 'Researching sources';
+        else if (mode === 'report') phaseText.textContent = 'Writing your report';
+        else phaseText.textContent = 'Working';
+      }
+
+      async function startResearch() {
+        const rawQuestion = questionEl.value;
+        const mode = modeEl.value;
+        const template = templateEl.value;
+        const provider = providerEl.value || null;
+        const finalQuestion = applyTemplate(rawQuestion, template);
+
+        errorEl.style.display = 'none';
+        reportEl.style.display = 'none';
+        reportActions.style.display = 'none';
+
+        if (!finalQuestion.trim()) {
+          errorEl.textContent = 'Please describe what you want to research.';
+          errorEl.style.display = 'block';
+          return;
+        }
+
+        runBtn.disabled = true;
+        statusEl.textContent = 'Running deep research... this may take up to a few minutes for complex questions.';
+        setPhase('scoping');
+
+        try {
+          const response = await fetch('http://localhost:8000/api/research', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: finalQuestion, mode, template, provider })
+          });
+
+          if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.detail || 'Request failed');
+          }
+
+          setPhase('report');
+          const data = await response.json();
+          statusEl.textContent = 'Done. Scroll down to read your report.';
+          reportEl.textContent = data.final_report || 'No report was generated.';
+          reportEl.style.display = 'block';
+          reportActions.style.display = 'flex';
+
+          addToHistory({
+            question: rawQuestion,
+            mode,
+            final_report: data.final_report || '',
+            time: formatTime(),
+          });
+        } catch (err) {
+          console.error(err);
+          errorEl.textContent = 'Something went wrong while running research. Make sure the backend is running and try again.';
+          errorEl.style.display = 'block';
+          statusEl.textContent = 'Idle. Fix the error above and try again.';
+          setPhase(null);
+        } finally {
+          runBtn.disabled = false;
+        }
+      }
+
+      runBtn.addEventListener('click', startResearch);
+
+      renderHistory();
+
+      copyBtn.addEventListener('click', () => {
+        if (!reportEl.textContent) return;
+        navigator.clipboard.writeText(reportEl.textContent).catch(() => {});
+      });
+
+      downloadBtn.addEventListener('click', () => {
+        if (!reportEl.textContent) return;
+        const blob = new Blob([reportEl.textContent], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'deep-research-report.txt';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+    </script>
+  </body>
+</html>

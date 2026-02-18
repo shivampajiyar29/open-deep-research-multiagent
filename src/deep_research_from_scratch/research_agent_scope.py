@@ -23,8 +23,13 @@ from deep_research_from_scratch.state_scope import AgentState, ClarifyWithUser, 
 # ===== UTILITY FUNCTIONS =====
 
 def get_today_str() -> str:
-    """Get current date in a human-readable format."""
-    return datetime.now().strftime("%a %b %-d, %Y")
+    """Get current date in a human-readable format.
+
+    Uses a cross-platform-compatible strftime pattern. The "%-d" flag is not
+    supported on Windows and raises ValueError("Invalid format string"), so we
+    avoid it and accept a leading zero on the day instead.
+    """
+    return datetime.now().strftime("%a %b %d, %Y")
 
 # ===== CONFIGURATION =====
 
